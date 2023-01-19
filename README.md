@@ -15,3 +15,9 @@ ___
 ### WIP Development:
     - There is only one wave
     - Starting over is not possible 
+
+
+### How to Run:
+    - Clone this repo
+    - Open a terminal and go to home directory of the repo.
+    - Run 'python main.py'
