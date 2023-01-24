@@ -2,7 +2,6 @@
 
 ### Description:
 This is a complete one-wave space invader game, although most of the functionalities are there. This is just a simple Space Invader game where the objective is to shoot down all enemies before they reach you. This game was built using python and the Pygame package. I started this project in order to learn Pygame and game development using Python.
-
 ___
 
 ### Functionality:
