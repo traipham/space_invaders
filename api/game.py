@@ -22,10 +22,12 @@ class Game:
         # Logistic elemets
         self.score = 0
         self.game_over = False
+        self.win = False
+        self.restart = False
         self.running = True
         self.display_menu = True
         # display main menu
-
+        self.restart_button = Button(window, "Restart", (255,255,255), index=1)
         # play music
         background_sound = mixer.Sound('sound\\background.wav')
         background_sound.set_volume(0.5)
@@ -42,7 +44,7 @@ class Game:
             MENU_TEXT = MENU_TEXT_FONT.render("Main Menu", True, (255,255,255))
             MENU_RECT = MENU_TEXT.get_rect(center=(640,100))
 
-            PLAY_BUTTON = Button(self.window)
+            # PLAY_BUTTON = Button(self.window)
 
 
     def run(self):
@@ -70,8 +72,27 @@ class Game:
                     if event.key == pygame.K_SPACE:
                         self.player.open_fire = True
 
+            if self.game_won():
+                # If you've won the game
+                self.restart_button.check_clicked()
+                self.restart_button.display_button()
+                if self.restart_button.clicked:
+                    self.restart = True
+                    self.win = True
+
             if self.is_game_over():
+                # If you've lost
                 self.show_game_over(WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
+                self.restart_button.check_clicked()
+                self.restart_button.display_button()
+                if self.restart_button.clicked:
+                    self.restart = True
+                    self.game_over = True
+                        
+            if self.restart and self.win and not self.game_over:
+                self.reset_game(win=True)
+            elif self.restart and self.game_over:
+                self.reset_game()
 
             # TODO: Put into Player function
             self.score += self.waves.is_collision(self.player.bullets_queue)
@@ -92,6 +113,24 @@ class Game:
         """Display game_over"""
         game_over_rend = game_over_font.render("GAME OVER!", True, (255, 100, 100))
         self.window.blit(game_over_rend, (x, y))
+
+    def reset_game(self, win:bool = False):
+        self.player = Player(self.window, self.player_img_path)
+        x_rand = random.randint(1, 5)
+        y_rand = random.randint(1, 5)
+        self.waves = Waves(self.window, self.enemy_img_path, x_rand, y_rand)
+        if not win:
+            self.score = 0 
+        self.game_over = False
+        self.win = False
+        self.restart = False
+        self.running = True
+        self.display_menu = True
+        self.restart_button.clicked = False
+
+    def game_won(self):
+        return self.waves.no_enemies()
+
 
     def is_game_over(self) -> bool:
         if len(self.waves.enemies) != 0:

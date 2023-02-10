@@ -22,23 +22,25 @@ if __name__ == "__main__":
     pygame.display.set_icon(icon)
 
     game = game.Game(window)
-    start_button = Button(window)
+    start_button = Button(window=window, text="Start", text_color=WHITE, index=1)
+    end_button = Button(window=window, text="End", text_color=(150,255,255), index=2)
     start_click = False
     run = True
-    window.fill((255, 255, 255))
+    window.fill(WHITE)
     while not start_click:
         start_button.check_clicked()
-        if start_button.quit:
-            run = False
-            break
+        end_button.check_clicked()
         start_click = start_button.is_clicked
         start_button.display_button()
+        end_button.display_button()
         for event in pygame.event.get():
             # quit game
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT or end_button.is_clicked:
                 run = False
                 break
         pygame.display.update()
+        if not run:
+            break
 
     if run:
         game.run()

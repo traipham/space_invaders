@@ -20,14 +20,14 @@ class Waves:
         self.game_over = False
         self.img_path = img_path
         # Add enemies to list, initiate row 
-        for col in range(num_col):
+        for row in range(num_row):
             # Initialize 2D list of enemies
-            for row in range(num_row):
+            for col in range(num_col):
                 new_enemy = Enemy(window, self.img_path)
                 new_enemy.xpos += new_enemy.enemey_1_img.get_width()*row
                 if col != 0: 
                     new_enemy.ypos += new_enemy.enemey_1_img.get_height()*col
-                self.enemies[col].append(new_enemy)
+                self.enemies[row].append(new_enemy)
 
     def display_wave(self):
         """Display wave of enemies"""
@@ -57,6 +57,10 @@ class Waves:
     # TODO: remove all enemies
     def remove_all(self):
         self.enemies.clear()
+
+    def no_enemies(self) -> bool:
+        check_row = list(map(lambda list: len(list) != 0, self.enemies))
+        return (not (True in check_row))
 
     # TODO: game_over should be in a game class
     def is_game_over(self):
