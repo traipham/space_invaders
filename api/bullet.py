@@ -1,4 +1,6 @@
 import pygame 
+import os
+import pathlib
 import random
 
 import api.player as player
@@ -15,8 +17,10 @@ class Bullet():
     def __init__(self, window, player):
         self._window = window
         self._player = player
-        self._path = 'game_icon\\laser_bullet.png'
-        self.img = pygame.image.load(self._path)
+        self._path = 'game_icon/laser_bullet.png'
+        file_dir = os.path.dirname(__file__)
+        image_path = pathlib.Path(file_dir).parent.absolute()
+        self.img = pygame.image.load(f"{image_path}/{self._path}")
         self.xpos = self._player.xpos
         self.ypos = 0
         self.xpos_change = 0
