@@ -1,4 +1,6 @@
-import pygame 
+import pathlib
+import pygame
+import os 
 import random
 import math
 from queue import Queue
@@ -18,7 +20,9 @@ class Player(pygame.Surface):
     """
     def __init__(self, window:pygame.Surface, img_path: str):
         self.window = window
-        self.player_img = pygame.image.load(img_path)
+        file_dir = os.path.dirname(__file__)
+        image_path = pathlib.Path(file_dir).parent.absolute()
+        self.player_img = pygame.image.load(f"{image_path}/{img_path}")
         self.xpos = WINDOW_WIDTH//2 - (self.player_img.get_width()//2)
         self.ypos = WINDOW_HEIGHT - (self.player_img.get_height()*2)
         self.start_pos = (self.xpos, self.ypos)
@@ -29,6 +33,7 @@ class Player(pygame.Surface):
         # Bullet 
         ## bullet_state = "ready" = bullet is ready to be fired
         ## bullet_state = "fire" = bullet is currently moving
+        self.bullet_speed = -5
         self.bullets_queue:list[bullet.Bullet] = []
         self.open_fire = False
         pass
@@ -43,7 +48,8 @@ class Player(pygame.Surface):
             if b.ypos == 0:
                 self.bullets_queue.remove(b)
                 continue
-            b.move_bullet(-0.5)
+            b.move_bullet(self.bullet_speed)
+            self.reload_bullets()
         self.move_player()
         self.window.blit(self.player_img, (self.xpos, self.ypos))           # to draw at coordinate
     
@@ -62,7 +68,7 @@ class Player(pygame.Surface):
         """
         if len(self.bullets_queue) < 6 and self.open_fire:
             # plays sound when bullet is fired
-            bullet_sound = mixer.Sound('sound\laser.wav')
+            bullet_sound = mixer.Sound('./sound/laser.wav')
             bullet_sound.play()
             # create bullet and fire it
             fired_bullet = bullet.Bullet(self.window, self)
@@ -71,6 +77,11 @@ class Player(pygame.Surface):
             self.open_fire = False
         else:
             pass
+    
+    def reload_bullets(self):
+        for bullet in self.bullets_queue:
+            if bullet.ypos <= 0:
+                self.bullets_queue.remove(bullet)
 
     @property
     def open_fire(self):
