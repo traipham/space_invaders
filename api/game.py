@@ -1,5 +1,7 @@
+import asyncio
 import pygame 
 import random
+
 from api.player import Player
 from api.enemy import Enemy
 from api.waves import Waves
@@ -14,10 +16,11 @@ WINDOW_BG_COLOR = (250, 234, 203)
 class Game:
     def __init__(self, window:pygame.Surface):
         # elements in game
-        self.player_img_path = 'game_icon\\player.png'
-        self.enemy_img_path = "C:\\Users\\traip\\OneDrive\\Desktop\\Python_Learning\\Projects\\learning_pygame\\game_icon\\enemy_1.png"
+        self.player_img_path = 'game_icon/player.png'
+        self.enemy_img_path = "game_icon/enemy_1.png"
         self.window = window
         self.player = Player(window, self.player_img_path)
+        self.player_movement_speed = 5
         self.waves = Waves(window, self.enemy_img_path, 3, 3)
         # Logistic elemets
         self.score = 0
@@ -29,9 +32,9 @@ class Game:
         # display main menu
         self.restart_button = Button(window, "Restart", (255,255,255), index=1)
         # play music
-        background_sound = mixer.Sound('sound\\background.wav')
+        background_sound = mixer.Sound('./sound/background.wav')
         background_sound.set_volume(0.5)
-        background_sound.play()
+        background_sound.play(loops=20)
 
     def main_menu(self):
         pygame.display.set_caption("Menu")
@@ -47,7 +50,7 @@ class Game:
             # PLAY_BUTTON = Button(self.window)
 
 
-    def run(self):
+    async def run(self):
         while self.running:
             # Change window color
             self.window.fill(WINDOW_BG_COLOR)
@@ -59,10 +62,10 @@ class Game:
                 # when there's a keyboard input, check if it's left or right movement
                 if event.type == pygame.KEYDOWN:
                     if (event.key in (pygame.K_a, pygame.K_LEFT)):
-                        self.player.xpos_change = -1.5
+                        self.player.xpos_change = -self.player_movement_speed
                         pygame.key.set_repeat(1, 1)
                     if (event.key in (pygame.K_d, pygame.K_RIGHT)):
-                        self.player.xpos_change = 1.5
+                        self.player.xpos_change = self.player_movement_speed
                         pygame.key.set_repeat(1, 1)
                     if (event.key == pygame.K_SPACE):
                         self.player.fire_bullet()  # initiate bullet object
@@ -102,6 +105,8 @@ class Game:
             self.waves.display_wave()
             self.player.display()
             pygame.display.update()
+            await asyncio.sleep(0)
+
     
     def show_score(self, x, y):
         font = pygame.font.Font('freesansbold.ttf', 32)
@@ -135,11 +140,16 @@ class Game:
     def is_game_over(self) -> bool:
         if len(self.waves.enemies) != 0:
             for row in self.waves.enemies:
-                for e in row:
-                    if e.isGameOver():
-                        self.game_over = True
-                        self.waves.remove_all()
-                        return self.game_over
+                if row == 0:
+                    continue
+                # check the highest ordered enemy has not crossed the limit
+                else:
+                    for e in row:
+                        if e.isGameOver(WINDOW_HEIGHT):
+                            self.game_over = True
+                            self.waves.remove_all()
+                            return self.game_over
+                    break
         return self.game_over
 
 # if __name__ == "__main__":
