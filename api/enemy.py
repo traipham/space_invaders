@@ -1,4 +1,6 @@
+import pathlib
 import pygame 
+import os
 import random
 
 import math
@@ -13,10 +15,12 @@ class Enemy(pygame.Surface):
     def __init__(self, window:pygame.Surface, img_path: str):
         self.num_row = 10
         self.window = window
-        self.enemey_1_img = pygame.image.load(img_path)
+        file_dir = os.path.dirname(__file__)
+        image_path = pathlib.Path(file_dir).parent.absolute()
+        self.enemey_1_img = pygame.image.load(f"{image_path}/{img_path}")
         self.xpos = WINDOW_WIDTH//2 - (self.enemey_1_img.get_width()//2)
         self.ypos = (self.enemey_1_img.get_height()*2)
-        self.xpos_change = -0.3
+        self.xpos_change = -0.8
         self.ypos_change = (WINDOW_HEIGHT//2 - self.enemey_1_img.get_height())//self.num_row 
         self.xpos_accel = 0
         self.start_pos = (self.xpos, self.ypos)
@@ -51,14 +55,14 @@ class Enemy(pygame.Surface):
         distance = math.sqrt(math.pow(self.xpos-bullet_xpos, 2) + math.pow(self.ypos-bullet_ypos, 2))
         if distance < self.enemey_1_img.get_height():
             # play explosion sound
-            explosion_sound = mixer.Sound('sound\explosion.wav')
+            explosion_sound = mixer.Sound('./sound/explosion.wav')
             explosion_sound.play()
             return True
         else:
             return False
 
-    def isGameOver(self):
-        if self.ypos >= 200:
+    def isGameOver(self, window_height:int):
+        if self.ypos >= window_height-50:
             return True
         else:
             return False
