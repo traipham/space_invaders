@@ -1,8 +1,10 @@
+import asyncio
 import pygame
+import os
 import random
 
 from api.button import Button
-import api.game as game 
+from api.game import Game
 
 
 WINDOW_WIDTH = 1080
@@ -11,19 +13,22 @@ WINDOW_BG_COLOR = (250, 234, 203)
 
 WHITE = (255,255,255)
 
-if __name__ == "__main__":
+async def main():
     # initilize pygame window
     pygame.init()
     window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
     # Title and Icon
     pygame.display.set_caption("Space Invaders")
-    icon = pygame.image.load('game_icon\\window_icon.png')
+    full_path = os.path.dirname(__file__)
+    icon = pygame.image.load(f'{full_path}/game_icon/window_icon.png')
     pygame.display.set_icon(icon)
 
-    game = game.Game(window)
-    start_button = Button(window=window, text="Start", text_color=WHITE, index=1)
-    end_button = Button(window=window, text="End", text_color=(150,255,255), index=2)
+    game = Game(window)
+    start_button = Button(window=window, text="Start",
+                          text_color=WHITE, index=1)
+    end_button = Button(window=window, text="End",
+                        text_color=(150, 255, 255), index=2)
     start_click = False
     run = True
     window.fill(WHITE)
@@ -39,8 +44,11 @@ if __name__ == "__main__":
                 run = False
                 break
         pygame.display.update()
+        await asyncio.sleep(0)
         if not run:
             break
-
     if run:
-        game.run()
+        await game.run()
+
+if __name__ == "__main__":
+    asyncio.run(main())
