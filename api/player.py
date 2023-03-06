@@ -69,6 +69,7 @@ class Player(pygame.Surface):
         if len(self.bullets_queue) < 6 and self.open_fire:
             # plays sound when bullet is fired
             bullet_sound = mixer.Sound('./sound/laser.wav')
+            bullet_sound.set_volume(0.5)
             bullet_sound.play()
             # create bullet and fire it
             fired_bullet = bullet.Bullet(self.window, self)

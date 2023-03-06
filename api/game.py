@@ -33,7 +33,7 @@ class Game:
         self.restart_button = Button(window, "Restart", (255,255,255), index=1)
         # play music
         background_sound = mixer.Sound('./sound/background.wav')
-        background_sound.set_volume(0.5)
+        background_sound.set_volume(0.25)
         background_sound.play(loops=20)
 
     def main_menu(self):
@@ -51,29 +51,38 @@ class Game:
 
 
     async def run(self):
+        hold_key_down:list[bool] = [False, False] # k_left down, k_right down, space_down
         while self.running:
             # Change window color
             self.window.fill(WINDOW_BG_COLOR)
-
+            keys = pygame.key.get_pressed()
             # Go through event of pygame, and make screen run continiously
+            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                self.player.xpos -= self.player_movement_speed
+            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                self.player.xpos += self.player_movement_speed
+            if keys[pygame.K_SPACE]:
+                self.player.fire_bullet()
+            else:
+                self.player.open_fire = True
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:       # When click the close window button
                     self.running = False
                 # when there's a keyboard input, check if it's left or right movement
-                if event.type == pygame.KEYDOWN:
-                    if (event.key in (pygame.K_a, pygame.K_LEFT)):
-                        self.player.xpos_change = -self.player_movement_speed
-                        pygame.key.set_repeat(1, 1)
-                    if (event.key in (pygame.K_d, pygame.K_RIGHT)):
-                        self.player.xpos_change = self.player_movement_speed
-                        pygame.key.set_repeat(1, 1)
-                    if (event.key == pygame.K_SPACE):
-                        self.player.fire_bullet()  # initiate bullet object
-                if event.type == pygame.KEYUP:
-                    if event.key in (pygame.K_a, pygame.K_LEFT, pygame.K_d, pygame.K_RIGHT):
-                        self.player.xpos_change = 0
-                    if event.key == pygame.K_SPACE:
-                        self.player.open_fire = True
+                # if event.type == pygame.KEYDOWN:
+                #     if (event.key in (pygame.K_a, pygame.K_LEFT)):
+                #         self.player.xpos_change = -self.player_movement_speed
+                #         pygame.key.set_repeat(1, 1)
+                #     if (event.key in (pygame.K_d, pygame.K_RIGHT)):
+                #         self.player.xpos_change = self.player_movement_speed
+                #         pygame.key.set_repeat(1, 1)
+                #     if (event.key == pygame.K_SPACE):
+                #         self.player.fire_bullet()  # initiate bullet object
+                # if event.type == pygame.KEYUP:
+                #     if event.key in (pygame.K_a, pygame.K_LEFT, pygame.K_d, pygame.K_RIGHT):
+                #         self.player.xpos_change = 0
+                #     if event.key == pygame.K_SPACE:
+                #         self.player.open_fire = True
 
             if self.game_won():
                 # If you've won the game

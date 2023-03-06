@@ -56,6 +56,7 @@ class Enemy(pygame.Surface):
         if distance < self.enemey_1_img.get_height():
             # play explosion sound
             explosion_sound = mixer.Sound('./sound/explosion.wav')
+            explosion_sound.set_volume(0.5)
             explosion_sound.play()
             return True
         else:
